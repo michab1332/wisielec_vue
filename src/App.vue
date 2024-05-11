@@ -8,13 +8,11 @@ import { ref, computed } from 'vue';
 const imgCount = ref(1);
 
 const currentImg = computed(() => {
+  if (word === blankGuessedWord.value.join('')) {
+    return "/hangman_imgs/win.gif";
+  }
   return `/hangman_imgs/${imgCount.value}.png`;
 });
-
-//test function
-const handleChangeImg = () => {
-  imgCount.value = imgCount.value + 1;
-}
 
 //get random word from words array
 const randomWord = () => {
@@ -35,9 +33,13 @@ const guessedWord = computed(() => {
 });
 
 const handleClickOnLetter = (e) => {
-  const letter = e.target.innerText;
-  guessedLetters.value.push(letter.toLowerCase());
-  console.log(guessedLetters.value);
+  const letter = e.target.innerText.toLowerCase();
+  guessedLetters.value.push(letter);
+  if (!word.split('').includes(letter)) {
+    if (imgCount.value < 10) {
+      imgCount.value++;
+    }
+  }
 }
 
 </script>
@@ -46,18 +48,18 @@ const handleClickOnLetter = (e) => {
   <Navbar />
   <div class="container">
     <div class="container__hangmanBox">
-      <img @click="handleChangeImg" :src="currentImg" alt="hangman">
+      <img :src="currentImg" alt="hangman">
     </div>
 
     <div class="container__actionBox">
       <div class="container__actionBox__word">
-        <span v-for="letter in guessedWord" :key="letter">
+        <span v-for="(letter, index) in guessedWord" :key="index">
           {{ letter }}
         </span>
       </div>
       <div class="container__actionBox__letters">
-        <span @click="handleClickOnLetter" class="container__actionBox__letters__letter" v-for="letter in letters"
-          :key="letter">
+        <span @click="handleClickOnLetter" class="container__actionBox__letters__letter"
+          v-for="(letter, index) in letters" :key="index">
           {{ letter }}
         </span>
       </div>
