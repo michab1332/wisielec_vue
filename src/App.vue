@@ -3,10 +3,25 @@
 import Navbar from './components/Navbar.vue';
 import { words } from './data.ts';
 
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
-let imgCount = ref(4);
-let currentImg = `/hangman_imgs/${imgCount.value}.png`
+let imgCount = ref(1);
+
+const currentImg = computed(() => {
+  return `/hangman_imgs/${imgCount.value}.png`;
+});
+
+//testfunction
+const handleChangeImg = () => {
+  imgCount.value = imgCount.value + 1;
+}
+
+const randomWord = () => {
+  const randomNumber = Math.floor(Math.random() * words.length);
+  return words[randomNumber];
+}
+
+console.log(randomWord());
 
 </script>
 
@@ -14,9 +29,12 @@ let currentImg = `/hangman_imgs/${imgCount.value}.png`
   <Navbar />
   <div class="container">
     <div class="container__hangmanBox">
-      <img :src="currentImg" alt="hangman">
+      <img @click="handleChangeImg" :src="currentImg" alt="hangman">
     </div>
 
+    <div class="container__actionBox">
+
+    </div>
   </div>
 </template>
 
@@ -24,6 +42,8 @@ let currentImg = `/hangman_imgs/${imgCount.value}.png`
 .container {
   background-color: #000;
   height: 90vh;
+  width: 100%;
+  display: flex;
 }
 
 .container__hangmanBox {
@@ -32,6 +52,9 @@ let currentImg = `/hangman_imgs/${imgCount.value}.png`
 
 .container__hangmanBox>img {
   height: 99%;
+}
 
+.container__actionBox {
+  width: 100%;
 }
 </style>
