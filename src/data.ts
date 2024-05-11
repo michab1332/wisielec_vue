@@ -1,0 +1,1 @@
+export const words: Array<string> = ["hangman", "game", "football", "react", "vue", "angular", "nodejs", "figma", "github"];
