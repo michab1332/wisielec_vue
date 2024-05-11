@@ -1,27 +1,44 @@
 <script setup lang="ts">
 
 import Navbar from './components/Navbar.vue';
-import { words } from './data.ts';
+import { words, letters } from './data.ts';
 
 import { ref, computed } from 'vue';
 
-let imgCount = ref(1);
+const imgCount = ref(1);
 
 const currentImg = computed(() => {
   return `/hangman_imgs/${imgCount.value}.png`;
 });
 
-//testfunction
+//test function
 const handleChangeImg = () => {
   imgCount.value = imgCount.value + 1;
 }
 
+//get random word from words array
 const randomWord = () => {
   const randomNumber = Math.floor(Math.random() * words.length);
   return words[randomNumber];
 }
 
-console.log(randomWord());
+const word = randomWord();
+const blankGuessedWord = ref(word.split('').map(letter => "_"));
+const guessedLetters = ref([]);
+const guessedWord = computed(() => {
+  for (let i = 0; i < word.length; i++) {
+    if (guessedLetters.value.includes(word[i])) {
+      blankGuessedWord.value[i] = word[i]
+    }
+  }
+  return blankGuessedWord.value;
+});
+
+const handleClickOnLetter = (e) => {
+  const letter = e.target.innerText;
+  guessedLetters.value.push(letter.toLowerCase());
+  console.log(guessedLetters.value);
+}
 
 </script>
 
@@ -33,7 +50,17 @@ console.log(randomWord());
     </div>
 
     <div class="container__actionBox">
-
+      <div class="container__actionBox__word">
+        <span v-for="letter in guessedWord" :key="letter">
+          {{ letter }}
+        </span>
+      </div>
+      <div class="container__actionBox__letters">
+        <span @click="handleClickOnLetter" class="container__actionBox__letters__letter" v-for="letter in letters"
+          :key="letter">
+          {{ letter }}
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -44,6 +71,7 @@ console.log(randomWord());
   height: 90vh;
   width: 100%;
   display: flex;
+  color: #fff;
 }
 
 .container__hangmanBox {
@@ -56,5 +84,48 @@ console.log(randomWord());
 
 .container__actionBox {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.container__actionBox__word {
+  border: 2px solid #fff;
+  margin: .5rem;
+  height: 100%;
+  font-size: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.container__actionBox__letters {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  justify-content: center;
+  margin: .5rem;
+  gap: .5rem;
+}
+
+.container__actionBox__letters__letter {
+  padding: 1rem 0;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.2rem;
+  border: 1px solid #fff;
+  transition: transform .1s ease-in;
+}
+
+.container__actionBox__letters__letter:hover {
+  transform: translateY(-5%);
+}
+
+@media (max-width: 600px) {
+  .container__hangmanBox {
+    display: none;
+  }
 }
 </style>
+<!--author: Michał Bonowicz -->
