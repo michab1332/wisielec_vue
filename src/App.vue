@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
-import Navbar from './components/Navbar.vue';
-import { words, letters as l } from './data.ts';
+import Navbar from '@/components/Navbar.vue';
+import { words, letters as l } from './data';
 
-import { ref, computed, onUpdated } from 'vue';
+import { ref, computed, type Ref } from 'vue';
 
 const imgCount = ref(1);
 const letters = ref(l);
@@ -22,8 +22,8 @@ const randomWord = () => {
 }
 
 const word = randomWord();
-const blankGuessedWord = ref(word.split('').map(letter => "_"));
-const guessedLetters = ref([]);
+const blankGuessedWord = ref(word.split('').map(() => "_"));
+const guessedLetters: Ref<string[]> = ref([]);
 
 const guessedWord = computed(() => {
   for (let i = 0; i < word.length; i++) {
@@ -34,8 +34,8 @@ const guessedWord = computed(() => {
   return blankGuessedWord.value;
 });
 
-const handleClickOnLetter = (e) => {
-  const letter = e.target.innerText.toLowerCase();
+const handleClickOnLetter = (e: any) => {
+  const letter: string = e.target.innerText.toLowerCase();
   guessedLetters.value.push(letter);
 
   //delete letter after click
