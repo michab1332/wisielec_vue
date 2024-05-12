@@ -1,11 +1,12 @@
 <script setup lang="ts">
 
 import Navbar from './components/Navbar.vue';
-import { words, letters } from './data.ts';
+import { words, letters as l } from './data.ts';
 
-import { ref, computed } from 'vue';
+import { ref, computed, onUpdated } from 'vue';
 
 const imgCount = ref(1);
+const letters = ref(l);
 
 const currentImg = computed(() => {
   if (word === blankGuessedWord.value.join('')) {
@@ -23,6 +24,7 @@ const randomWord = () => {
 const word = randomWord();
 const blankGuessedWord = ref(word.split('').map(letter => "_"));
 const guessedLetters = ref([]);
+
 const guessedWord = computed(() => {
   for (let i = 0; i < word.length; i++) {
     if (guessedLetters.value.includes(word[i])) {
@@ -35,6 +37,13 @@ const guessedWord = computed(() => {
 const handleClickOnLetter = (e) => {
   const letter = e.target.innerText.toLowerCase();
   guessedLetters.value.push(letter);
+
+  //delete letter after click
+  if (imgCount.value < 10) {
+    letters.value = letters.value.filter(l => l.toLowerCase() !== letter);
+  }
+
+  //checking if clicked letter is in word
   if (!word.split('').includes(letter)) {
     if (imgCount.value < 10) {
       imgCount.value++;
@@ -52,10 +61,13 @@ const handleClickOnLetter = (e) => {
     </div>
 
     <div class="container__actionBox">
-      <div class="container__actionBox__word">
+      <div v-if="imgCount < 10" class="container__actionBox__word">
         <span v-for="(letter, index) in guessedWord" :key="index">
           {{ letter }}
         </span>
+      </div>
+      <div v-else class="container__actionBox__word error">
+        GAME OVER
       </div>
       <div class="container__actionBox__letters">
         <span @click="handleClickOnLetter" class="container__actionBox__letters__letter"
@@ -104,29 +116,43 @@ const handleClickOnLetter = (e) => {
 .container__actionBox__letters {
   height: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  justify-content: center;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  align-items: center;
+  justify-items: center;
   margin: .5rem;
   gap: .5rem;
 }
 
 .container__actionBox__letters__letter {
   padding: 1rem 0;
-  text-align: center;
   cursor: pointer;
   font-weight: 700;
   font-size: 1.2rem;
-  border: 1px solid #fff;
+  border: 5px solid #fff;
   transition: transform .1s ease-in;
+  user-select: none;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .container__actionBox__letters__letter:hover {
   transform: translateY(-5%);
 }
 
+.error {
+  color: red;
+}
+
 @media (max-width: 600px) {
   .container__hangmanBox {
     display: none;
+  }
+
+  .container__actionBox__letters {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 }
 </style>
